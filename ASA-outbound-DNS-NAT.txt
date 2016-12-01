@@ -1,0 +1,23 @@
+! Force outbound DNS requests to 8.8.8.8 to use OpenDNS
+!
+object network Google-DNS
+ host 8.8.8.8
+!
+object network Comcast-DNS
+ host 75.75.75.75
+!
+object network OpenDNS
+ host 208.67.222.222
+!
+object service DNS-UDP
+ service udp destination eq domain
+!
+object service DNS-TCP
+ service tcp destination eq domain
+!
+object-group network DNS-NOT-2-USE
+ network-object object Comcast-DNS
+ network-object object Google-DNS
+!
+nat (inside,outside) source static any interface destination static DNS-NOT-2-USE OpenDNS service DNS-UDP DNS-UDP
+nat (inside,outside) source static any interface destination static DNS-NOT-2-USE OpenDNS service DNS-TCP DNS-TCP
